@@ -1,0 +1,688 @@
+<!--
+# Author: Ivar Vargas Belizario
+# Copyright (c) 2020
+# E-mail: ivar@usp.br
+-->
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Medical Image Analysis (MEDIA)</title>
+
+<link href="./lib/style.css" id="stylecss" rel="stylesheet">
+<link href="./lib/fontawesome-free-5.14.0-web/css/all.css" rel="stylesheet">
+<link href="./lib/bootstrap-4.5.2-dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<!-- <script src="./lib/d3.v4.min.js" charset="utf-8"></script> -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+
+<script src="./lib/util.js"></script>
+<script src="./lib/drawio.js"></script>
+<script src="./lib/wip.js"></script>
+
+<link rel="icon" href="./img/icon.png">
+
+<body style="background-color: hsl(222, 17%, 40%); padding: 0; margin: 0;"
+    onload="//SCB.fullScreen();"
+>
+    <div id="idloading"
+         style="
+            display: none;
+            z-index: 99999999;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            background: rgba(50,50,50,0.7);
+            z-index: 10;
+         ">
+        <div style="position: absolute; 
+            /*border: solid 1px red;*/
+            min-width: 160px;
+            text-align: right;
+            top: 50%;
+            left: 50%;
+            margin-top: -80px;
+            margin-left: -80px;
+            z-index: 20;
+            text-align: center;
+            "
+            >
+            <!--<img src="lib/img/loading.gif" style="width: 100px; text-align: center;"/>-->
+            <div class="d-flex justify-content-center">
+              <div  class="spinner-border text-danger" 
+                    style="width: 160px; height: 160px;" 
+                    role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <table style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;
+        width: 100%; height: 100%; border-collapse: collapse;"
+    >
+        <tr>
+            <td colspan="2">
+                <div style="background-color: #131d38; width: 100%;
+                    /* position: fixed; z-index: 2; */
+                    "
+                >
+                    <div id="maincontainer">
+                        <nav class="navbar navbar-light" style="background-color: #131033; margin:0; padding: 0;">
+                            <a class="nav-link" style="color: #fff;" href="./"><i class="fas fa-th fa-lg white-color" style="color: #fff;"></i> &nbsp; applications </a>
+                            <!-- <a class="nav-link" style="color: #fff;" href="./"><i class="fas fa-th fa-lg white-color" style="color: #fff;"></i> &nbsp; Pleura Lung Classification </a> -->
+                            <div class="form-inline">
+                                <a class="nav-link" style="color: #fff;" href="#"><i class="fa fa-user-circle" style="color: #fff;"></i> {{email}}</a>
+                                <a class="nav-link" href="./logout" style="color: #fff;">
+                                    <i class="fas fa-sign-out-alt" style="color: #ff0000;"></i> Logout
+                                </a>
+                            </div>
+                        </nav>
+                    </div>    
+                </div>            
+            </td>
+        </tr>
+        <tr style="height: 100%;">
+            <td style="background-color: #0d2e4d;;
+                width: 40px; min-width: 40px;
+                vertical-align: top;
+            "
+            >
+                <div style="padding-left: 5px; padding-top: 5px;">
+                    <div class="btn-group-vertical">
+                        <!-- bg-transparent -->
+                        <a href="#" class="btn btn-primary btn-sm"
+                            style="width: 30px;
+                            background-color: #6243a8;
+                            border-color: #6243a8;
+                            "
+                            title="New user"
+                        >
+                            <!-- <i class="fa fa-search"></i> -->
+                            <i class="fa fa-user-plus fa-lg" style="vertical-align: middle;"></i>
+                        </a>
+                        <a href="#" class="btn btn-primary btn-sm"
+                            style="width: 30px;
+                            background-color: #6243a8;
+                            border-color: #6243a8;
+                            "
+                            title="Change password"
+                        >
+                            <!-- <i class="fa fa-search"></i> -->
+                            <i class="fas fa-user-edit fa-lg" style="vertical-align: middle;"></i>
+                        </a>
+                        <a href="#" class="btn btn-success btn-sm"
+                            style="width: 30px;
+                            background-color: #6243a8;
+                            border-color: #6243a8;
+                            "
+                            title="Change password"
+                        >
+                            <!-- <i class="fa fa-search"></i> -->
+                            <i class="fas fa-user-shield fa-lg" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                    <div style="height: 10px;"></div>
+
+                    <div class="btn-group-vertical">
+                        <a class="btn btn-dark btn-sm"
+                            style="width: 30px;
+                            background-color: #131033;
+                            border-color: #131033;
+                            "
+                            title="Change password"
+                            href="./logout"
+                        >
+                            <!-- <i class="fa fa-search"></i> -->
+                            <i class="fas fa-sign-out-alt fa-lg" style="color: rgb(255, 0, 0);"></i>
+                        </a>
+                    </div>
+                </div>
+            </td>
+            <td style="vertical-align: top;">
+                <div style="padding: 10px;">
+                    <style>
+                        .ttable table{
+                            padding: 0;
+                        }
+                        .ttable td{
+                            padding: 5px;
+                        }
+                    </style>
+                    <div class="ttable">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div style="text-align: center; color: #fff; font-weight: bold;">
+                                        <a class="btn btn-warning"
+                                            type="button"
+                                            href="./lung"
+                                        >
+                                            <!-- <i class="fa fa-search"></i> -->
+                                            <i class="fas fa-lungs" style="font-size: 95px; vertical-align: middle;
+                                            padding-left: 0; margin-left: 0; width: 120px;
+                                            "></i>
+                                        </a><br>
+                                        Lung Analysis
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="text-align: center; color: #fff; font-weight: bold;">
+                                        <a class="btn btn-primary " type="button"
+                                            style="background-color: #000;
+                                            border-color: #000;"
+                                            href="./simil"
+                                        >
+                                            <!-- <i class="fa fa-search"></i> -->
+                                            <i class="fas fa-fingerprint" style="font-size: 95px ;vertical-align: middle;
+                                            padding-left: 0; margin-left: 0; width: 120px;
+                                            "></i>
+                                        </a><br>
+                                        Similarity Queries
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                    <!-- <div style="height: 35px;"></div> -->
+                    <div id="lyfrminputpanel" style="padding: 10px; 
+                        min-width: 250px; max-width: 250px; margin: 0 auto; 
+                        min-height: 100%; max-height: 100%;
+                        "
+                    >
+                        <div style="padding: 5px;
+                            padding-bottom: 2px;
+                            padding-top: 2px;
+                            background-color :#22124a; color: #fff; font-weight: bold;">
+                            Convert VSI to TIFF
+                        </div>
+                        <div style="padding: 5px; background-color: #392f70;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td>
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td>
+                                                    <div style="color: #fff;">
+                                                        Name
+                                                        <input id="idFileName" type="text"  class="form-control  form-control-sm" placeholder="Name"
+                                                        >
+                                                    </div>
+                                                    <div style="height: 15px;"></div>
+                                                </td>
+                                            </tr>
+                                            </tr>
+                                                <td>
+                                                    <div style="color: #fff;">
+                                                        VSI File
+                                                    </div>
+                                                    <table>
+                                                        <tr>
+                                                            <td style="width: 100%;">
+                                                                <input id="idinputFilevsival" type="text"  class="form-control  form-control-sm"
+                                                                    placeholder="VSI File"
+                                                                    style="width: 100%;"
+                                                                    readonly
+                                                                >
+                                                                <div style="height: 15px;"></div>
+                                                            </td>
+                                                            <td>
+                                                                <div style="width: 5px;"></div>
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="btn btn-primary btn-sm"
+                                                                    onclick="
+                                                                        SCB.showlayout('openfile');
+                                                                    "
+                                                                    title="Choose File"
+                                                                >
+                                                                    <i class="fa fa-folder-open"
+                                                                        style="padding: 0;margin: 0; width: 100%; color: #fff"
+                                                                    ></i>
+                                                                </a>
+                                                                <div style="height: 15px;"></div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="color: #fff;">
+                                                        Factor
+                                                    </div>
+                                                    <table style="width: 100%;">
+                                                        <tr>
+                                                            <td>
+                                                                <!-- <a href="#" class="btn btn-primary btn-sm"
+                                                                    onmousedown="
+                                                                        timer_is_plus = 0;
+                                                                        doTimer();
+                                                                    "
+                                                                    onmouseup="
+                                                                        stopCount();
+                                                                    "
+                                                                    title="Upload image"
+                                                                    style="width: 30px;
+                                                                        /* background-color: #00c234;
+                                                                        border-color: #00c234; */
+                                                                    "
+                                                                >
+                                                                    -
+                                                                </a> -->
+                                                            </td>
+                                                            <td style="width: 100%;">
+                                                                <input type="number" class="form-control form-control-sm"
+                                                                min="1" value="3" step="1" max="10"
+                                                                style="width: 100%;"
+                                                                id="idnumberfactor"
+                                                                />
+                                                            </td>
+                                                            <td>
+
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <div style="height: 15px;"></div>
+                                                </td>
+                                            </tr>
+                                        </table>                                
+                                    </td>   
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="text-align: left;">
+                                                    <a href="#" class="btn btn-secondary btn-sm"
+                                                        onclick="
+                                                            SCB.opengallery();
+                                                            SCB.showlayout('gallerylist');
+                                                        "
+                                                        title=""
+                                                        style="width: 70px;
+                                                            /* background-color: #00c234;
+                                                            border-color: #00c234; */
+                                                        "
+                                                    >
+                                                        Cancel
+                                                    </a>
+                                                            
+                                                </td>
+                                                <td style="text-align: right;">
+                                                    <a href="#" class="btn btn-primary btn-sm"
+                                                        onclick="
+                                                            SCB.createimgpfromvsi();
+                                                        "
+                                                        title=""
+                                                        style="width: 70px;
+                                                            /* background-color: #00c234;
+                                                            border-color: #00c234; */
+                                                            
+                                                        "
+                                                    >
+                        <!--                                         <i class="fas fa-upload fa-lg"
+                                                            style="padding: 0;margin: 0; width: 100%; color: #fff"
+                                                        ></i>
+                        -->                                        Convert
+                                                    </a>                                                
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="height: 20px;"></div>
+                    </div>
+                    <div id="lyfrmuploadpanel" style="padding: 10px; 
+                        min-width: 250px; max-width: 250px; margin: 0 auto; 
+                        min-height: 100%; max-height: 100%;
+                        "
+                    >
+                        <div style="padding: 5px;
+                            padding-bottom: 2px;
+                            padding-top: 2px;
+                            background-color :#22124a; color: #fff; font-weight: bold;">
+                            Upload Image
+                        </div>
+                        <div style="padding: 5px; background-color: #392f70;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td>
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td>
+                                                    <div style="color: #fff;">
+                                                        Name
+                                                        <input id="idUploadFileName" type="text"  class="form-control  form-control-sm" placeholder="Name"
+                                                        >
+                                                    </div>
+                                                    <div style="height: 15px;"></div>
+                                                </td>
+                                            </tr>
+                                            </tr>
+                                                <td>
+                                                    <div style="color: #fff;">
+                                                        Image
+                                                    </div>
+                                                    <table>
+                                                        <tr>
+                                                            <td style="width: 100%;">
+                                                                <input id="idUploadtFilevsival" type="text"  class="form-control  form-control-sm"
+                                                                    placeholder="VSI File"
+                                                                    style="width: 100%;"
+                                                                    readonly
+                                                                >
+                                                                <div style="height: 15px;"></div>
+                                                            </td>
+                                                            <td>
+                                                                <div style="width: 5px;"></div>
+                                                            </td>
+                                                            <td>
+                                                                <a href="#" class="btn btn-primary btn-sm"
+                                                                    onclick="
+                                                                        SCB.showlayout('openfile');
+                                                                    "
+                                                                    title="Choose File"
+                                                                >
+                                                                    <i class="fa fa-folder-open"
+                                                                        style="padding: 0;margin: 0; width: 100%; color: #fff"
+                                                                    ></i>
+                                                                </a>
+                                                                <div style="height: 15px;"></div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>                                
+                                    </td>   
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="text-align: left;">
+                                                    <a href="#" class="btn btn-secondary btn-sm"
+                                                        onclick="
+                                                            SCB.opengallery();
+                                                            SCB.showlayout('gallerylist');
+                                                        "
+                                                        title=""
+                                                        style="width: 70px;
+                                                            /* background-color: #00c234;
+                                                            border-color: #00c234; */
+                                                        "
+                                                    >
+                                                        Cancel
+                                                    </a>
+                                                            
+                                                </td>
+                                                <td style="text-align: right;">
+                                                    <a href="#" class="btn btn-primary btn-sm"
+                                                        onclick="
+                                                            SCB.createimgpfromvsi();
+                                                        "
+                                                        title=""
+                                                        style="width: 70px;
+                                                            /* background-color: #00c234;
+                                                            border-color: #00c234; */
+                                                            
+                                                        "
+                                                    >
+                        <!--                                         <i class="fas fa-upload fa-lg"
+                                                            style="padding: 0;margin: 0; width: 100%; color: #fff"
+                                                        ></i>
+                        -->                                        Upload
+                                                    </a>                                                
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="height: 20px;"></div>
+                    </div>
+                    
+                    <div id="lylistpanel" style="text-align:center; height: 100%; margin: 0 auto;">
+                        <!--
+                        <div style="position: fixed; height: 45px;
+                            width: 100%; background-color: #392f70;
+                            padding: 10px;
+                            "
+                        >
+                            <input type="text"  class="form-control  form-control-sm" placeholder="Search"
+                                style="width: 250px;"
+                            >
+                        </div>
+                        <div style="height: 45px;"></div>
+                        -->
+                        <div id="lylistview" style="text-align:center; margin: 0 auto;
+                            padding: 10px;
+                            "
+                        > 
+                        </div>
+                        <div style="height: 10px;"></div>
+                    </div>
+                    <div id="lyimgpanel">
+                        <div style="position: fixed; height: 45px;
+                            width: 100%; background-color: #392f70;
+                            
+                            "
+                        >
+                            <div class="btn-group" style="padding: 10px;">
+                                <input id ="idsizelider" type="range" min="0" max="10000" value="0"
+                                    title="Add edges"
+                                    style="width: 400px; 
+                                    vertical-align: bottom;
+                                    margin: 0;
+                                    padding: 0;
+                                    "
+                                    onmouseover="
+                                    "
+                                    onmouseout="
+                                    "
+                                    onchange="
+
+                                    "
+                                />
+                                <a href="#" class="btn bg-transparent btn-sm"
+                                    onclick="
+                                        DRW.clear();
+                                    "
+                                    title="Scribbles 1"
+                                    style="width: 30px;
+                                        /* background-color: #00c234;
+                                        border-color: #00c234; */
+                                    "
+                                >
+                                    <i class="fas fa-eraser fa-lg"
+                                        style="padding: 0;margin: 0; width: 100%; color: #fff"
+                                    ></i>
+                                </a>
+                                <a href="#" class="btn bg-transparent btn-sm"
+                                    onclick="
+                                        DRW.executesegmentation();
+                                    "
+                                    title="Scribbles 1"
+                                    style="width: 30px;
+                                        /* background-color: #00c234;
+                                        border-color: #00c234; */
+                                    "
+                                >
+                                    <i class="fa fa-play-circle fa-lg"
+                                        style="padding: 0;margin: 0; width: 100%; color: #fff"
+                                    ></i>
+                                </a>
+                            </div>
+
+                            <div style="background-color: #141659;">
+                                <nav class="nav">
+                                    <a class="nav-link active" aria-current="page" href="#" style="color: #fff;">Original</a>
+                                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true" style="color: #00ff00;">Pleura</a>
+                                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Process 2</a>
+                                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Process 3</a>
+                                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Process 4</a>
+                                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Process 5</a>
+                                </nav>
+                            </div>
+    
+                        </div>
+
+                        <div style="height: 75px;"></div>
+
+                        <table style="margin: 0 auto; border: solid 1px #ff00ff;
+                            /* height: 100%;
+                            width: 100%; */
+                        ">
+                            <tr>
+                                <td>
+
+                                </td>
+                                <td>
+                                    <div>
+                                        <div
+                                            id="lyimgview"
+                                            style="
+                                            /*border: solid 1px #0000ff;*/
+                                            min-width: 500px;
+                                            min-height: 500px;
+                                            max-width: 500px;
+                                            max-height: 500px;
+                                            overflow: auto;
+                                            vertical-align: middle;
+                                            text-align: center; 
+                                            line-height: 500px; /* same as height! */
+                                            background-color: #854154;
+                                            "
+                                        >
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    
+                    <div id="lyfileopen" style="height: 100%; padding: 10px;">
+                        <div style="padding: 5px; background-color :#22124a; color: #fff; font-weight: bold;">
+                            Choose File
+                        </div>
+                        <div style="padding:5px; background-color: #392f70;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td>
+                                        <a href="#" class="btn btn-secondary btn-sm"
+                                            onclick="
+                                                SCB.showlayout('frmvsi');
+                                            "
+                                            title="Cancel"
+                                        >
+                                            <!-- <i class="fas fa-home" -->
+                                            <!-- <i class="far fa-eye-slash" -->
+                                            <i class="fas fa-eye-slash"
+                                                style="padding: 0;margin: 0; width: 100%; color: #fff"
+                                            ></i>
+                                        </a>                                                                        
+                                    </td>
+                                    <td>
+                                        <div style="width: 5px;"></div>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-warning btn-sm"
+                                            onclick="
+                                                SCB.opendirectory(SCB.homepath,'');
+                                            "
+                                            title=""
+                                        >
+                                            <i class="fas fa-home"
+                                                style="padding: 0;margin: 0; width: 100%; color: #000"
+                                            ></i>
+                                        </a>                                                                        
+                                    </td>
+                                    <td>
+                                        <div style="width: 5px;"></div>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="btn btn-primary btn-sm"
+                                            onclick="
+                                                SCB.goBack();
+                                            "
+                                            title="Go Back"
+                                        >
+                                            <i class="fas fa-arrow-circle-up"
+                                                style="padding: 0;margin: 0; width: 100%; color: #fff"
+                                            ></i>
+                                        </a>
+                                                
+                                    </td>
+                                    <td>
+                                        <div style="width: 5px;"></div>
+                                    </td>
+                                    <td style="width: 100%; margin-right:5px;">
+                                        <input id="inputpathdir" type="text"  class="form-control form-control-sm" placeholder=""
+                                            style="width: 100%;
+                                            background-color: #3d3454;
+                                            border-color: #22124a;
+                                            color: #fff;
+                                            "
+                                        >
+                                    </td>
+                                </tr>
+                            </table>
+                            <div style="height: 5px;"></div>
+                            <div style="overflow: auto;
+                            min-height: 100%; max-height: 100%;
+                            background-color: #fff;
+                            "
+                            >
+                                <div id="lypaneldirsfiles">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div style="height: 20px;"></div>
+                    </div>
+                    <!-- <div style="height: 25px;"></div> -->
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div style="background-color: #000; color: #fff;
+                height: 20px; position: fixed; bottom: 0; width: 100%; vertical-align: middle;
+            
+                padding-left: 15px;
+                padding-right: 15px;
+                font-size: 13px;
+            
+                ">
+                    <span id="idbottbar" style="
+                        float: left; 
+                    ">
+                        &nbsp;
+                    </span>        
+                    <span id="idimginfo" style="
+                        float: right; 
+                    ">
+                        &nbsp;
+                    </span>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <script>
+        var SCB = new wip();
+        var DRW = new drawio("#lyimgview");
+    </script>
+
+</body>
+</html>
